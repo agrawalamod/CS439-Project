@@ -1,5 +1,5 @@
 
-[rsignal,Fs] = audioread('Data24.m4a');
+[rsignal,Fs] = audioread('Data42.m4a');
 rsignal= rsignal';
 
 SampleCount = length(rsignal);
@@ -58,8 +58,8 @@ windowSize = 20;
 b = (1/windowSize)*ones(1,windowSize);
 a = 1;
 
-filterCIR = filter(b,a,cir);
-%filterCIR = cir;
+%filterCIR = filter(b,a,cir);
+filterCIR = cir;
 
 figure;
 plot(1:length(filterCIR),filterCIR);
@@ -83,22 +83,22 @@ axis tight
 %}
 
 min_distance = 0.200;
-max_distance = 5.00;
+max_distance = 1.000 + 1.000;
 
 min_sample = (min_distance/343.300)*48000;
 max_sample = (max_distance/343.300)*48000;
 
 
 direct_peak = [1 sortedCIR(2,1)];
-echo_peak = [714];
-%{
+%echo_peak = [714];
+
 for i=1:length(sortedCIR)
     if(sortedCIR(1,i) >= direct_peak(1,1) + min_sample && sortedCIR(1,i) < direct_peak(1,1) + max_sample)
         echo_peak = [sortedCIR(1,i) sortedCIR(2,i)];
         break;
     end
 end
-%}
+
 distance = (echo_peak(1) - direct_peak(1))/48000*343.300/2;
 
 display(distance);
