@@ -1,7 +1,7 @@
-fs = 48000;
+fs = 44100;
 
 preamble = [];
-for i=1:24000
+for i=1:fs/2
     x = round(rand);
     if(x==1)
         preamble = [preamble 1];
@@ -21,5 +21,5 @@ transmit_preamble = 100*transmit_preamble;
 figure;
 plot(1:length(transmit_preamble),transmit_preamble);
 
-audiowrite('freq_signal.wav',transmit_preamble,fs);
+audiowrite('freq_signal_441.wav',transmit_preamble,fs);
     

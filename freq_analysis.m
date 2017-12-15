@@ -1,11 +1,10 @@
-
-[rsignal,Fs] = audioread('Data42.m4a');
+[rsignal,Fs] = audioread('Data73.m4a');
 rsignal= rsignal';
 
 SampleCount = length(rsignal);
 recordingTime = SampleCount/Fs;
 
-%figure;
+figure;
 plot(1:length(rsignal),rsignal);
 title('Received Signal');
 
@@ -13,44 +12,51 @@ title('Received Signal');
 [aCorr, alag] = xcorr(transmit_preamble, transmit_preamble);
 [xCorr, lags] = xcorr(rsignal, transmit_preamble);
 
+figure;
+plot(lags,xCorr);
+title('Cross Correlation');
 
-[max_corr,index] = max(abs(xCorr))
-shifts = lags(index)
-high_index = shifts+1
+figure;
+plot(alag, aCorr);
+title('Auto Correlation')
+
+[max_corr,index] = max(abs(xCorr));
+shifts = lags(index);
+high_index = shifts+1;
 
 
 %cropped_signal = r_signal(87660:87660+48000);
 
-cropped_signal = rsignal(high_index:high_index+48000);
+cropped_signal = rsignal(high_index:high_index+Fs);
 
 %r_signal = cropped_signal;
 
-%figure;
+figure;
 plot(1:length(cropped_signal),cropped_signal);
-title('cropped signal');
+title('Cropped Signal');
 
 
-fftcroppedsignal = fftshift(fft(cropped_signal,48000));
+fftcroppedsignal = fftshift(fft(cropped_signal,Fs));
 
 
 farray = -Fs/2:(Fs/2)-1;
 
-%figure;
+figure;
 plot(farray, preamble); 
-title('preamble');
+title('Transmitted Preamble');
 
-%figure;
+figure;
 plot(farray, abs(fftcroppedsignal));
 title('FFT of received signal');
 
 result = fftcroppedsignal./preamble;
 
-result_shifted = ifft(ifftshift(result),48000);
+result_shifted = ifft(ifftshift(result),Fs);
 
-%figure;
-t_y = linspace(0, recordingTime, 48000);
+figure;
+t_y = linspace(0, recordingTime, Fs);
 plot(1:length(result_shifted),abs(result_shifted));
-title('CIR');
+title('Channel Impulse Response');
 
 cir = abs(result_shifted);
 
@@ -83,14 +89,13 @@ axis tight
 %}
 
 min_distance = 0.200;
-max_distance = 1.000 + 1.000;
+max_distance = 1.050 + 1.050;
 
-min_sample = (min_distance/343.300)*48000;
-max_sample = (max_distance/343.300)*48000;
+min_sample = (min_distance/346.00)*Fs;
+max_sample = (max_distance/346.00)*Fs;
 
 
 direct_peak = [1 sortedCIR(2,1)];
-%echo_peak = [714];
 
 for i=1:length(sortedCIR)
     if(sortedCIR(1,i) >= direct_peak(1,1) + min_sample && sortedCIR(1,i) < direct_peak(1,1) + max_sample)
@@ -99,7 +104,7 @@ for i=1:length(sortedCIR)
     end
 end
 
-distance = (echo_peak(1) - direct_peak(1))/48000*343.300/2;
+distance = (echo_peak(1) - direct_peak(1))/Fs*346.00/2;
 
 display(distance);
 
